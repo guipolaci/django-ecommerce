@@ -1,0 +1,30 @@
+{% extends "store/base.html" %}
+
+{% block title %}Produtos{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-8 text-gray-800">Produtos</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    {% for product in products %}
+    <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">
+            {{ product.name }}
+        </h2>
+
+        <p class="text-gray-600 mb-4">
+            R$ {{ product.price }}
+        </p>
+
+        <a href="{% url 'product_detail' product.id %}"
+           class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            Ver Detalhes
+        </a>
+
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
