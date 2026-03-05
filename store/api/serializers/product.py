@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from store.models import Product
 
-
 class ProductSerializer(serializers.ModelSerializer):
     """
     Serializer responsible for converting Product model
