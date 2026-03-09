@@ -1,0 +1,70 @@
+{% extends "store/base.html" %}
+{% block title %}Pedido #{{ order.id }} — ShopBR{% endblock %}
+
+{% block content %}
+
+<nav class="text-xs text-gray-500 mb-5">
+    <a href="{% url 'order_list' %}" class="hover:underline" style="color: var(--brand-orange);">Meus pedidos</a>
+    <span class="mx-1">›</span>
+    <span class="text-gray-800">Pedido #{{ order.id }}</span>
+</nav>
+
+<div class="max-w-3xl mx-auto">
+
+    <div class="bg-white rounded-lg border border-gray-200 mb-4">
+
+        <div class="flex items-center justify-between px-5 py-3 border-b border-gray-100 rounded-t-lg"
+             style="background: #fdf6ee;">
+            <div class="flex gap-8 text-xs">
+                <div>
+                    <p class="uppercase text-gray-400 font-semibold mb-0.5">Realizado em</p>
+                    <p class="text-gray-800">{{ order.created_at|date:"d/m/Y" }}</p>
+                </div>
+                <div>
+                    <p class="uppercase text-gray-400 font-semibold mb-0.5">Total</p>
+                    <p class="text-gray-800 font-semibold">R$ {{ order.get_total }}</p>
+                </div>
+                <div>
+                    <p class="uppercase text-gray-400 font-semibold mb-0.5">Pedido nº</p>
+                    <p class="text-gray-800">#{{ order.id }}</p>
+                </div>
+            </div>
+            <span class="text-xs px-3 py-1 rounded-full font-semibold
+                {% if order.status == 'confirmed' %}bg-green-100 text-green-700
+                {% elif order.status == 'cancelled' %}bg-red-100 text-red-700
+                {% else %}bg-amber-100 text-amber-700{% endif %}">
+                {{ order.get_status_display }}
+            </span>
+        </div>
+
+        <div class="divide-y divide-gray-100">
+            {% for item in order.items.all %}
+            <div class="p-5 flex gap-4">
+                <div class="w-16 h-16 rounded border border-gray-100 flex items-center justify-center flex-shrink-0"
+                     style="background: #fdf6ee;">
+                    <i class="fa-solid fa-box-open text-lg" style="color: #d1a47b;"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-gray-900">{{ item.product.name }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Quantidade: {{ item.quantity }}</p>
+                    <p class="text-xs text-gray-500">Preço unitário: R$ {{ item.price }}</p>
+                </div>
+                <p class="text-sm font-bold text-gray-900 flex-shrink-0">R$ {{ item.get_total_price }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="px-5 py-4 border-t border-gray-100 flex justify-between items-center">
+            <span class="text-sm text-gray-700">Total do pedido:</span>
+            <span class="text-lg font-bold text-gray-900">R$ {{ order.get_total }}</span>
+        </div>
+
+    </div>
+
+    <a href="{% url 'order_list' %}" class="text-sm hover:underline" style="color: var(--brand-orange);">
+        <i class="fa-solid fa-chevron-left text-xs mr-1"></i>Voltar aos pedidos
+    </a>
+
+</div>
+
+{% endblock %}

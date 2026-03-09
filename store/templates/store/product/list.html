@@ -1,28 +1,47 @@
 {% extends "store/base.html" %}
-
-{% block title %}Produtos{% endblock %}
+{% block title %}Produtos — ShopBR{% endblock %}
 
 {% block content %}
 
-<h1 class="text-3xl font-bold mb-8 text-gray-800">Produtos</h1>
+<!-- Banner -->
+<div class="rounded-xl overflow-hidden mb-6 px-8 py-10"
+     style="background: linear-gradient(135deg, #1c1008 0%, #2d1a0a 60%, #3d2210 100%);">
+    <h1 class="text-white text-3xl font-bold mb-1">Bem-vindo à ShopBR</h1>
+    <p class="text-amber-200 text-sm opacity-80">Os melhores produtos, direto para você.</p>
+</div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Grid de produtos -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     {% for product in products %}
-    <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+    <div class="product-card bg-white rounded-lg border border-gray-200 p-4 flex flex-col cursor-pointer"
+         onclick="window.location='{% url 'product_detail' product.id %}'">
 
-        <h2 class="text-xl font-semibold text-gray-800 mb-2">
+        <!-- Imagem placeholder -->
+        <div class="w-full h-44 rounded-md mb-3 flex items-center justify-center"
+             style="background: #fdf6ee;">
+            <i class="fa-solid fa-box-open text-4xl" style="color: #d1a47b;"></i>
+        </div>
+
+        <h2 class="text-sm font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">
             {{ product.name }}
         </h2>
 
-        <p class="text-gray-600 mb-4">
-            R$ {{ product.price }}
-        </p>
+        <div class="mt-auto pt-3">
+            <p class="text-xl font-bold" style="color: var(--text-main);">R$ {{ product.price }}</p>
+            <p class="text-xs text-green-600 mb-3 mt-0.5">Em estoque</p>
 
-        <a href="{% url 'product_detail' product.id %}"
-           class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-            Ver Detalhes
-        </a>
+            <a href="{% url 'product_detail' product.id %}"
+               class="btn-primary w-full block py-2 text-sm"
+               onclick="event.stopPropagation()">
+                Ver produto
+            </a>
+        </div>
 
+    </div>
+    {% empty %}
+    <div class="col-span-4 text-center py-16 text-gray-400">
+        <i class="fa-solid fa-box-open text-5xl mb-4" style="color:#d1a47b;"></i>
+        <p>Nenhum produto disponível no momento.</p>
     </div>
     {% endfor %}
 </div>

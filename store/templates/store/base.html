@@ -2,64 +2,165 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <title>{% block title %}Ecommerce{% endblock %}</title>
-
-    <!-- Tailwind CDN -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>{% block title %}ShopBR{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+
+        :root {
+            --header-dark:   #1c1008;
+            --header-mid:    #2d1a0a;
+            --brand-orange:  #b45309;
+            --btn-primary:   #f59e0b;
+            --btn-primary-h: #d97706;
+            --bg-page:       #f5f0eb;
+            --text-main:     #1c1917;
+        }
+
+        body { background: var(--bg-page); color: var(--text-main); }
+
+        .btn-primary {
+            background: var(--btn-primary);
+            border: 1px solid #92400e;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1c1008;
+            transition: background 0.15s;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: var(--btn-primary-h); }
+
+        .btn-outline {
+            background: #fff;
+            border: 1px solid #d1c4b8;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-main);
+            transition: background 0.15s;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-outline:hover { background: #fdf6ee; }
+
+        .product-card { transition: box-shadow 0.2s, border-color 0.2s; }
+        .product-card:hover {
+            box-shadow: 0 4px 18px rgba(180,83,9,0.13);
+            border-color: #f59e0b;
+        }
+
+        .toast { animation: slideIn 0.3s ease; }
+        @keyframes slideIn {
+            from { transform: translateX(110%); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
+        .toast.hide { animation: slideOut 0.35s ease forwards; }
+        @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
+
+        input:focus { outline: 2px solid var(--btn-primary); outline-offset: 0; }
+    </style>
 </head>
 
+<body class="min-h-screen flex flex-col">
 
+    <header>
+        <!-- Barra principal -->
+        <div style="background: var(--header-dark);" class="w-full">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
 
-<body class="bg-gray-100 min-h-screen flex flex-col">
+                <a href="{% url 'product_list' %}"
+                   class="border border-transparent hover:border-amber-400 rounded px-2 py-1 transition">
+                    <span class="text-white font-bold text-xl tracking-tight">
+                        Shop<span style="color: var(--btn-primary);">BR</span>
+                    </span>
+                </a>
 
-    <!-- Header -->
-    <header class="bg-white shadow-md">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="{% url 'product_list' %}" class="text-2xl font-bold text-gray-800">
-                MeuEcommerce
-            </a>
+                <div class="flex items-center gap-2">
 
-            <a href="{% url 'cart_detail' %}"
-   class="relative text-gray-700 hover:text-blue-600 transition text-2xl">
+                    <div class="flex flex-col border border-transparent hover:border-amber-400 rounded px-3 py-1 transition">
+                        {% if request.user.is_authenticated %}
+                            <span class="text-gray-400 text-xs">Olá, {{ request.user.username }}</span>
+                            <div class="flex items-center gap-3">
+                                <a href="{% url 'order_list' %}" class="text-white text-sm font-semibold hover:text-amber-400 transition">Pedidos</a>
+                                <span class="text-gray-600 text-xs">|</span>
+                                <a href="{% url 'logout' %}" class="text-white text-sm font-semibold hover:text-amber-400 transition">Sair</a>
+                            </div>
+                        {% else %}
+                            <span class="text-gray-400 text-xs">Bem-vindo</span>
+                            <div class="flex items-center gap-3">
+                                <a href="{% url 'login' %}" class="text-white text-sm font-semibold hover:text-amber-400 transition">Entrar</a>
+                                <span class="text-gray-600 text-xs">|</span>
+                                <a href="{% url 'register' %}" class="text-white text-sm font-semibold hover:text-amber-400 transition">Cadastrar</a>
+                            </div>
+                        {% endif %}
+                    </div>
 
-    <i class="fa-solid fa-cart-shopping"></i>
+                    <a href="{% url 'cart_detail' %}"
+                       class="flex items-end gap-1.5 border border-transparent hover:border-amber-400 rounded px-3 py-1 transition">
+                        <i class="fa-solid fa-cart-shopping text-white text-2xl"></i>
+                        <span class="text-white text-sm font-bold mb-0.5">Carrinho</span>
+                    </a>
 
-</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub-barra de navegação -->
+        <div style="background: var(--header-mid);" class="w-full">
+            <div class="max-w-7xl mx-auto px-4 py-2 flex items-center gap-4">
+                <a href="{% url 'product_list' %}"
+                   class="text-white text-sm hover:text-amber-400 border border-transparent hover:border-amber-400 rounded px-2 py-0.5 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-bars text-xs"></i> Todos os Produtos
+                </a>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'order_list' %}"
+                   class="text-white text-sm hover:text-amber-400 border border-transparent hover:border-amber-400 rounded px-2 py-0.5 transition">
+                    Meus Pedidos
+                </a>
+                {% endif %}
+            </div>
         </div>
     </header>
 
     {% if messages %}
-<div class="fixed top-6 right-6 z-50 space-y-2">
-    {% for message in messages %}
-    <div class="bg-green-600 text-white px-6 py-4 rounded-xl shadow-lg animate-fade-in">
-        {{ message }}
+    <div class="fixed top-4 right-4 z-50 flex flex-col gap-2">
+        {% for message in messages %}
+        <div class="toast bg-white shadow-lg rounded-lg px-5 py-4 flex items-center gap-3 min-w-72"
+             style="border-left: 4px solid var(--brand-orange);">
+            <i class="fa-solid fa-circle-check text-lg" style="color: var(--brand-orange);"></i>
+            <span class="text-gray-800 text-sm font-medium">{{ message }}</span>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
-{% endif %}
+    {% endif %}
 
-    <!-- Content -->
-    <main class="flex-1 max-w-6xl mx-auto px-6 py-8">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white shadow-inner">
-        <div class="max-w-6xl mx-auto px-6 py-4 text-center text-gray-500">
-            © 2026 MeuEcommerce
+    <footer style="background: var(--header-dark);" class="mt-10">
+        <div class="max-w-7xl mx-auto px-4 py-8 text-center">
+            <span class="text-white font-bold text-lg">
+                Shop<span style="color: var(--btn-primary);">BR</span>
+            </span>
+            <p class="text-gray-500 text-xs mt-2">© 2026 ShopBR. Todos os direitos reservados.</p>
         </div>
     </footer>
 
-<script>
-    setTimeout(() => {
-        const alerts = document.querySelectorAll('.bg-green-600');
-        alerts.forEach(alert => {
-            alert.style.opacity = '0';
-            alert.style.transition = 'opacity 0.5s';
+    <script>
+        document.querySelectorAll('.toast').forEach(toast => {
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 380);
+            }, 3500);
         });
-    }, 3000);
-</script>
+    </script>
 
 </body>
 </html>

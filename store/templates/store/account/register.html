@@ -1,0 +1,69 @@
+{% extends "store/base.html" %}
+{% block title %}Criar conta — ShopBR{% endblock %}
+
+{% block content %}
+
+<div class="max-w-sm mx-auto">
+
+    <div class="text-center mb-6">
+        <span class="text-2xl font-bold text-gray-900">
+            Shop<span style="color: var(--brand-orange);">BR</span>
+        </span>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-300 p-6">
+
+        <h1 class="text-xl font-semibold text-gray-900 mb-5">Criar conta</h1>
+
+        {% if error %}
+        <div class="text-sm px-4 py-3 rounded-md mb-4 flex items-start gap-2"
+             style="background: #fff7ed; border: 1px solid #fb923c; color: #9a3412;">
+            <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" class="flex flex-col gap-4">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium text-gray-800 mb-1">Usuário</label>
+                <input type="text" name="username" required autofocus
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-800 mb-1">E-mail</label>
+                <input type="email" name="email" required
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-800 mb-1">Senha</label>
+                <input type="password" name="password" required
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-800 mb-1">Confirmar senha</label>
+                <input type="password" name="confirm_password" required
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            </div>
+
+            <button type="submit" class="btn-primary w-full py-2 text-sm mt-1">
+                Criar sua conta ShopBR
+            </button>
+        </form>
+
+    </div>
+
+    <p class="text-center text-sm text-gray-600 mt-5">
+        Já tem uma conta?
+        <a href="{% url 'login' %}" class="font-semibold hover:underline" style="color: var(--brand-orange);">
+            Entrar
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

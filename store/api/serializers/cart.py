@@ -35,3 +35,11 @@ class AddToCartSerializer(serializers.Serializer):
     """
 
     product_id = serializers.IntegerField()
+
+class UpdateCartItemSerializer(serializers.Serializer):
+    """
+    Serializer used to update the quantity of a cart item.
+    Quantity must be a positive integer or zero (which removes the item).
+    """
+
+    quantity = serializers.IntegerField(min_value=0)

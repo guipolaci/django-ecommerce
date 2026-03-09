@@ -1,0 +1,60 @@
+{% extends "store/base.html" %}
+{% block title %}Pedido confirmado — ShopBR{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-5 flex items-start gap-4">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+             style="background: #fff7ed;">
+            <i class="fa-solid fa-check text-xl" style="color: var(--brand-orange);"></i>
+        </div>
+        <div>
+            <h1 class="text-xl font-bold" style="color: var(--brand-orange);">Pedido realizado com sucesso!</h1>
+            <p class="text-sm text-gray-600 mt-1">
+                Pedido <strong>#{{ order.id }}</strong> confirmado em
+                {{ order.created_at|date:"d/m/Y" }} às {{ order.created_at|date:"H:i" }}.
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-200 p-5 mb-5">
+        <h2 class="text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100">
+            Itens do pedido
+        </h2>
+
+        <div class="divide-y divide-gray-100">
+            {% for item in order.items.all %}
+            <div class="py-4 flex gap-4">
+                <div class="w-14 h-14 rounded border border-gray-100 flex items-center justify-center flex-shrink-0"
+                     style="background: #fdf6ee;">
+                    <i class="fa-solid fa-box-open" style="color: #d1a47b;"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">{{ item.product.name }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Qtd: {{ item.quantity }} × R$ {{ item.price }}</p>
+                </div>
+                <p class="text-sm font-bold text-gray-900 flex-shrink-0">R$ {{ item.get_total_price }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="border-t border-gray-100 pt-4 flex justify-between items-center">
+            <span class="text-sm text-gray-700 font-medium">Total do pedido:</span>
+            <span class="text-lg font-bold text-gray-900">R$ {{ order.get_total }}</span>
+        </div>
+    </div>
+
+    <div class="flex gap-3">
+        <a href="{% url 'order_list' %}" class="btn-primary flex-1 block text-center py-2.5 text-sm">
+            Ver meus pedidos
+        </a>
+        <a href="{% url 'product_list' %}" class="btn-outline flex-1 block text-center py-2.5 text-sm">
+            Continuar comprando
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

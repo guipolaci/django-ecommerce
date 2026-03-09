@@ -1,9 +1,11 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from store.services.cart import get_product_by_id, add_product_to_cart, get_cart, decrease_product_from_cart, increase_product_from_cart, remove_product_from_cart, update_product_quantity
 
+@login_required
 def add_to_cart(request, product_id: int):
     """
     Handle request to add product to cart.
@@ -23,6 +25,7 @@ def add_to_cart(request, product_id: int):
 
     return redirect("product_list")
 
+@login_required
 def cart_detail(request):
     """
     Responsible only for orchestrating cart visualization.
@@ -38,6 +41,7 @@ def cart_detail(request):
 
     return render(request, "store/cart/detail.html", {"cart": cart})
 
+@login_required
 def decrease_cart_item(request, product_id: int):
     if not request.session.session_key:
         request.session.create()
@@ -48,6 +52,7 @@ def decrease_cart_item(request, product_id: int):
 
     return redirect("cart_detail")
 
+@login_required
 def increase_cart_item(request, product_id: int):
     if not request.session.session_key:
         request.session.create()
@@ -58,6 +63,7 @@ def increase_cart_item(request, product_id: int):
 
     return redirect("cart_detail")
 
+@login_required
 def remove_cart_item(request, product_id: int):
     if not request.session.session_key:
         request.session.create()
@@ -68,6 +74,7 @@ def remove_cart_item(request, product_id: int):
 
     return redirect("cart_detail")
 
+@login_required
 @require_POST
 def update_cart_item(request, product_id: int):
     if not request.session.session_key:
