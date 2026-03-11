@@ -5,9 +5,6 @@ from store.services import list_products, retrieve_product
 def product_list(request):
     """
     Handle product list page request.
-
-    This view does not contain business logic.
-    It delegates responsibility to the service layer.
     """
 
     products = list_products()
