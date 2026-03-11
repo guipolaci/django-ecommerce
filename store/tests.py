@@ -23,12 +23,13 @@ from store.services.order import checkout
 # corta a cebola do zero toda vez que precisar dela.
 # ══════════════════════════════════════════════════════════════
 
-def make_product(name="Camiseta", price=Decimal("49.90")):
+def make_product(name="Camiseta", price=Decimal("49.90"), stock=10):
     """Creates and returns a Product for use in tests."""
     return Product.objects.create(
         name=name,
         description="Descrição do produto",
         price=price,
+        stock=stock,
     )
 
 
@@ -268,6 +269,108 @@ class CheckoutServiceTest(TestCase):
 
         order_item = OrderItem.objects.get(order=result["order"])
         self.assertEqual(str(order_item.price), "99.90")
+
+
+
+# ══════════════════════════════════════════════════════════════
+# STOCK
+# Testa as regras de negócio relacionadas ao estoque.
+# ══════════════════════════════════════════════════════════════
+
+class StockServiceTest(TestCase):
+
+    def setUp(self):
+        self.session_key = "session-stock"
+
+    def test_add_product_out_of_stock_fails(self):
+        """
+        Adding a product with stock=0 to the cart should return success=False.
+        The system must block it before even creating a CartItem.
+        """
+        product = make_product(stock=0)
+
+        result = add_product_to_cart(self.session_key, product.id)
+
+        self.assertFalse(result["success"])
+        self.assertIn("estoque", result["error"].lower())
+        self.assertFalse(CartItem.objects.filter(cart__session_key=self.session_key).exists())
+
+    def test_add_product_exceeding_stock_fails(self):
+        """
+        Adding more units than available stock should return success=False.
+        Like trying to put 5 items in your cart when there are only 2 on the shelf.
+        """
+        product = make_product(stock=2)
+
+        add_product_to_cart(self.session_key, product.id)  # quantity = 1
+        add_product_to_cart(self.session_key, product.id)  # quantity = 2
+        result = add_product_to_cart(self.session_key, product.id)  # would be 3 — blocked
+
+        self.assertFalse(result["success"])
+        item = CartItem.objects.get(cart__session_key=self.session_key, product=product)
+        self.assertEqual(item.quantity, 2)
+
+    def test_checkout_decreases_stock(self):
+        """
+        After a successful checkout, the product stock must be reduced
+        by the quantity purchased.
+        Like a warehouse removing items from the shelf after an order ships.
+        """
+        product = make_product(stock=10, price=Decimal("50.00"))
+        user = make_user()
+
+        add_product_to_cart(self.session_key, product.id)
+        add_product_to_cart(self.session_key, product.id)  # 2 units in cart
+
+        checkout(self.session_key, user)
+
+        product.refresh_from_db()
+        self.assertEqual(product.stock, 8)
+
+    def test_checkout_fails_when_stock_insufficient(self):
+        """
+        If stock runs out between adding to cart and checking out,
+        the checkout must fail and the order must NOT be created.
+        This simulates a race condition — two users competing for the last item.
+        """
+        product = make_product(stock=1, price=Decimal("50.00"))
+        user = make_user()
+
+        add_product_to_cart(self.session_key, product.id)  # 1 unit in cart
+
+        # Simulate another user buying the last unit
+        product.stock = 0
+        product.save()
+
+        result = checkout(self.session_key, user)
+
+        self.assertFalse(result["success"])
+        self.assertIn("estoque", result["error"].lower())
+        self.assertEqual(Order.objects.filter(user=user).count(), 0)
+
+    def test_product_is_available_returns_false_when_stock_zero(self):
+        """
+        is_available() must return False when stock is 0.
+        This is used by templates to disable the add-to-cart button.
+        """
+        product = make_product(stock=0)
+        self.assertFalse(product.is_available())
+
+    def test_product_is_available_returns_true_when_stock_positive(self):
+        """
+        is_available() must return True when stock > 0.
+        """
+        product = make_product(stock=5)
+        self.assertTrue(product.is_available())
+
+    def test_has_enough_stock(self):
+        """
+        has_enough_stock() must return True only when stock >= requested quantity.
+        """
+        product = make_product(stock=3)
+        self.assertTrue(product.has_enough_stock(1))
+        self.assertTrue(product.has_enough_stock(3))
+        self.assertFalse(product.has_enough_stock(4))
 
 
 # ══════════════════════════════════════════════════════════════

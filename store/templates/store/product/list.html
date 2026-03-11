@@ -28,7 +28,16 @@
 
         <div class="mt-auto pt-3">
             <p class="text-xl font-bold" style="color: var(--text-main);">R$ {{ product.price }}</p>
-            <p class="text-xs text-green-600 mb-3 mt-0.5">Em estoque</p>
+
+            {% if product.is_available %}
+                {% if product.stock <= 5 %}
+                    <p class="text-xs text-orange-500 mb-3 mt-0.5">Restam {{ product.stock }} unidade(s)</p>
+                {% else %}
+                    <p class="text-xs text-green-600 mb-3 mt-0.5">Em estoque</p>
+                {% endif %}
+            {% else %}
+                <p class="text-xs text-red-500 mb-3 mt-0.5">Fora de estoque</p>
+            {% endif %}
 
             <a href="{% url 'product_detail' product.id %}"
                class="btn-primary w-full block py-2 text-sm"
