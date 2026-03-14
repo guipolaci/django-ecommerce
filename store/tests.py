@@ -15,13 +15,10 @@ from store.services.cart import (
 )
 from store.services.order import checkout
 
-
-# ══════════════════════════════════════════════════════════════
 # HELPERS
 # Funções auxiliares reutilizadas em vários testes.
 # São como ingredientes pré-preparados na cozinha — você não
 # corta a cebola do zero toda vez que precisar dela.
-# ══════════════════════════════════════════════════════════════
 
 def make_product(name="Camiseta", price=Decimal("49.90"), stock=10):
     """Creates and returns a Product for use in tests."""
@@ -43,12 +40,10 @@ def make_cart(session_key="test-session-key"):
     return Cart.objects.create(session_key=session_key)
 
 
-# ══════════════════════════════════════════════════════════════
 # ACCOUNT SERVICES
 # Testa as regras de negócio de registro e login.
 # Não precisamos de request real — usamos um objeto falso (None)
 # porque o service só usa o request no login() do Django.
-# ══════════════════════════════════════════════════════════════
 
 class RegisterUserServiceTest(TestCase):
 
@@ -86,11 +81,9 @@ class RegisterUserServiceTest(TestCase):
         self.assertEqual(User.objects.filter(username="joao").count(), 1)
 
 
-# ══════════════════════════════════════════════════════════════
 # CART SERVICES
 # Testa as regras de negócio do carrinho.
 # Cada teste começa do zero (banco limpo) — o Django garante isso.
-# ══════════════════════════════════════════════════════════════
 
 class CartServiceTest(TestCase):
 
@@ -195,11 +188,8 @@ class CartServiceTest(TestCase):
         ).exists()
         self.assertFalse(exists)
 
-
-# ══════════════════════════════════════════════════════════════
 # ORDER SERVICES
 # Testa o fluxo de checkout — a regra de negócio mais crítica.
-# ══════════════════════════════════════════════════════════════
 
 class CheckoutServiceTest(TestCase):
 
@@ -270,12 +260,8 @@ class CheckoutServiceTest(TestCase):
         order_item = OrderItem.objects.get(order=result["order"])
         self.assertEqual(str(order_item.price), "99.90")
 
-
-
-# ══════════════════════════════════════════════════════════════
 # STOCK
 # Testa as regras de negócio relacionadas ao estoque.
-# ══════════════════════════════════════════════════════════════
 
 class StockServiceTest(TestCase):
 
@@ -372,13 +358,10 @@ class StockServiceTest(TestCase):
         self.assertTrue(product.has_enough_stock(3))
         self.assertFalse(product.has_enough_stock(4))
 
-
-# ══════════════════════════════════════════════════════════════
 # VIEWS — INTEGRAÇÃO
 # Testa o fluxo completo: request HTTP → view → banco → response.
 # Usa o Client do Django que simula um browser sem precisar de
 # um servidor rodando. É como um robô que clica nos botões.
-# ══════════════════════════════════════════════════════════════
 
 class AccountViewTest(TestCase):
 

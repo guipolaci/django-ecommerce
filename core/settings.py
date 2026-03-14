@@ -92,5 +92,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
+# Media files (imagens de produtos, uploads de usuários)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # ── Default primary key ──────────────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

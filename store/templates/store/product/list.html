@@ -16,10 +16,16 @@
     <div class="product-card bg-white rounded-lg border border-gray-200 p-4 flex flex-col cursor-pointer"
          onclick="window.location='{% url 'product_detail' product.id %}'">
 
-        <!-- Imagem placeholder -->
-        <div class="w-full h-44 rounded-md mb-3 flex items-center justify-center"
+        <!-- Imagem do produto -->
+        <div class="w-full h-44 rounded-md mb-3 overflow-hidden flex items-center justify-center"
              style="background: #fdf6ee;">
-            <i class="fa-solid fa-box-open text-4xl" style="color: #d1a47b;"></i>
+            {% if product.image %}
+                <img src="{{ product.image.url }}"
+                     class="w-full h-full object-cover"
+                     alt="{{ product.name }}">
+            {% else %}
+                <i class="fa-solid fa-box-open text-4xl" style="color: #d1a47b;"></i>
+            {% endif %}
         </div>
 
         <h2 class="text-sm font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">

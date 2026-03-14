@@ -7,13 +7,12 @@ class Product(models.Model):
     Responsible only for data structure and simple domain behavior.
     """
 
-    name = models.CharField(max_length=255)
+    name        = models.CharField(max_length=255)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    # Stock quantity — how many units are available for purchase
-    stock = models.PositiveIntegerField(default=0)
+    price       = models.DecimalField(max_digits=10, decimal_places=2)
+    stock       = models.PositiveIntegerField(default=0)
+    image       = models.ImageField(upload_to='products/', blank=True, null=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.name
@@ -36,7 +35,6 @@ class Product(models.Model):
         """
         Decreases stock by the given quantity.
         Should only be called after has_enough_stock() confirms availability.
-        Like physically removing items from a warehouse shelf.
         """
         self.stock -= quantity
         self.save()

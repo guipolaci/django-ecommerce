@@ -12,11 +12,17 @@
 
 <div class="flex flex-col md:flex-row gap-6">
 
-    <!-- Imagem -->
-    <div class="bg-white rounded-lg border border-gray-200 flex items-center justify-center flex-shrink-0"
-         style="min-width: 300px; height: 340px; background: #fdf6ee;">
-        <i class="fa-solid fa-box-open text-7xl" style="color: #d1a47b;"></i>
-    </div>
+        <!-- Imagem -->
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center flex-shrink-0"
+             style="min-width: 300px; height: 340px; background: #fdf6ee;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}"
+                     class="w-full h-full object-cover"
+                     alt="{{ product.name }}">
+            {% else %}
+                <i class="fa-solid fa-box-open text-7xl" style="color: #d1a47b;"></i>
+            {% endif %}
+        </div>
 
     <!-- Informações -->
     <div class="flex-1 bg-white rounded-lg border border-gray-200 p-6 flex flex-col gap-5">
