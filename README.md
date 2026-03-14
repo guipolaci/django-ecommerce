@@ -6,12 +6,13 @@ E-commerce backend construído com Django, seguindo arquitetura em camadas (Serv
 
 ## Funcionalidades
 
-- Catálogo de produtos com controle de estoque
+- Catálogo de produtos com imagens e controle de estoque
 - Carrinho de compras por sessão
 - Checkout com preço travado no momento da compra
 - Histórico de pedidos por usuário
 - Sistema de autenticação completo (registro, login, logout)
-- Painel administrativo customizado
+- Painel administrativo customizado (Django Admin)
+- Dashboard administrativo próprio em `/dashboard`
 - API REST paralela à interface web
 
 ---
@@ -23,6 +24,7 @@ E-commerce backend construído com Django, seguindo arquitetura em camadas (Serv
 - **PostgreSQL 16** — banco de dados em produção
 - **Docker + Docker Compose** — ambiente containerizado
 - **SQLite** — banco de dados em desenvolvimento local
+- **Pillow** — processamento de imagens
 
 ---
 
@@ -51,12 +53,15 @@ store/
 ├── models/       # estrutura de dados e métodos de domínio
 ├── selectors/    # queries ao banco — somente leitura
 ├── services/     # regras de negócio
+├── forms.py      # formulários com validação
 ├── views/        # thin views — só lidam com HTTP
+│   └── dashboard.py  # área administrativa própria
 ├── api/          # API REST com DRF
 │   ├── serializers/
 │   ├── views/
 │   └── urls.py
 └── templates/
+    └── dashboard/  # templates do painel administrativo
 ```
 
 ---
@@ -119,6 +124,21 @@ python manage.py createsuperuser
 
 ---
 
+## Dashboard Administrativo
+
+Área administrativa própria acessível em `/dashboard` para usuários staff.
+
+| Página | URL | Descrição |
+|---|---|---|
+| Visão geral | `/dashboard/` | Cards com métricas e últimos pedidos |
+| Produtos | `/dashboard/products/` | Lista com edição e exclusão |
+| Novo produto | `/dashboard/products/new/` | Formulário de cadastro com upload de imagem |
+| Editar produto | `/dashboard/products/<id>/edit/` | Edição de produto existente |
+
+Acesso restrito a usuários com `is_staff=True`.
+
+---
+
 ## Testes
 
 ```bash
@@ -167,3 +187,9 @@ O estoque é validado ao adicionar ao carrinho e novamente no checkout. O segund
 
 **Services sem acesso ao request**
 Services recebem dados simples (`session_key: str`, `user: User`) e nunca acessam `request` diretamente. Isso os torna reutilizáveis em qualquer contexto e testáveis sem HTTP.
+
+**Imagens armazenadas em /media**
+O campo `ImageField` salva o arquivo em `media/products/` e guarda apenas o caminho no banco. Em produção, os arquivos de mídia devem ser servidos por um servidor dedicado ou serviço de armazenamento externo.
+
+**Exclusão via POST, nunca GET**
+A exclusão de produtos aceita apenas POST. Operações destrutivas via GET são inseguras — podem ser disparadas por bots, pré-carregamento do navegador ou cliques acidentais.
